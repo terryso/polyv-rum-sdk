@@ -121,6 +121,8 @@ export interface MitoConfig {
   debug: boolean;
   maxBreadcrumbs: number;
   sampleRate: MitoSampleRateConfig;
+  // 框架类型：'vue' | 'react' | 'native'，默认 'vue' 保持兼容性
+  framework?: 'vue' | 'react' | 'native';
   vue: {
     Vue?: any;
     lifecycle: boolean;

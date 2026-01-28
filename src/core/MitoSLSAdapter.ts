@@ -81,9 +81,12 @@ export class MitoSLSAdapter {
         debug: this.options.debug,
         maxBreadcrumbs: this.options.maxBreadcrumbs,
         Vue: context.Vue || this.options.vue?.Vue,
-        framework: {
-          vue: true
-        },
+        // 根据 framework 配置决定是否设置 Vue 框架
+        // 如果未指定且没有 Vue 实例，则不设置 framework，使用原生 DOM 监听
+        ...(this.options.framework === 'vue' || (this.options.framework === undefined && context.Vue)
+          ? { framework: { vue: true } }
+          : {}
+        ),
         beforeDataReport: this.handleDataReport,
         silent: !this.options.debug,
         silentConsole: !this.options.debug,

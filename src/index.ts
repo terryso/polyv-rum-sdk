@@ -24,3 +24,22 @@ export {
   createRUMPluginVue3,
   useRUM
 } from './vue3/plugin.vue3';
+
+export * as react from './react/plugin.react';
+export {
+  initRUMSystem as initRUMSystemReact,
+  trackEvent as trackEventReact,
+  trackPerformance as trackPerformanceReact,
+  trackAction as trackActionReact,
+  trackMetric as trackMetricReact,
+  getBreadcrumbs as getBreadcrumbsReact,
+  enableRUM as enableRUMReact,
+  disableRUM as disableRUMReact,
+  getRUMConfig as getRUMConfigReact,
+  destroyRUM as destroyRUMReact,
+  getRUMManager as getRUMManagerReact,
+  handleRouteChange,
+  setUser as setRUMUserReact,
+  clearUser as clearRUMUserReact,
+  useRUM as useRUMReact
+} from './react/plugin.react';
