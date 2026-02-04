@@ -414,51 +414,24 @@ export class SLSWebTrackingAdapter {
     logData: Record<string, any>,
     data: Record<string, any>
   ): void {
-    // 提取自定义事件名称
-    if (data.name) {
-      logData.custom_event_name = String(data.name);
+    // 从 dimensions 中提取的自定义事件名称（驼峰转下划线）
+    if (data.customEventName) {
+      logData.custom_event_name = String(data.customEventName);
     }
 
-    // 提取 action（如果是通过 trackAction 调用的）
-    if (data.action) {
-      logData.custom_event_action = String(data.action);
+    // 从 dimensions 中提取的 action（驼峰转下划线）
+    if (data.customEventAction) {
+      logData.custom_event_action = String(data.customEventAction);
     }
 
-    // 提取自定义事件的其他字段，最多保留 10 个字段
-    const customFields: Record<string, any> = {};
-    let fieldCount = 0;
-    const maxFields = 10;
-    const reservedKeys = [
-      'type', 'timestamp', 'name', 'action', 'eventType', 'category',
-      'level', 'userId', 'userName', 'userEmail', 'accountId', 'roles',
-      'pageTitle', 'path', 'search', 'hash', 'url', 'referrer', 'userAgent',
-      'rawData', 'dimensions'
-    ];
-
-    for (const [key, value] of Object.entries(data)) {
-      if (reservedKeys.includes(key)) continue;
-      if (fieldCount >= maxFields) break;
-
-      // 只保留简单类型的值
-      if (
-        value === null ||
-        value === undefined ||
-        typeof value === 'string' ||
-        typeof value === 'number' ||
-        typeof value === 'boolean'
-      ) {
-        customFields[key] = value;
-        fieldCount++;
-      }
+    // 从 dimensions 中提取的自定义字段 JSON（驼峰转下划线）
+    if (data.customEventFields) {
+      logData.custom_event_fields = data.customEventFields;
     }
 
-    if (Object.keys(customFields).length > 0) {
-      logData.custom_event_fields = JSON.stringify(customFields);
-    }
-
-    // 如果有 detail 字段，单独提取
-    if (data.detail !== undefined) {
-      logData.custom_event_detail = String(data.detail);
+    // 从 dimensions 中提取的 detail（驼峰转下划线）
+    if (data.customEventDetail !== undefined) {
+      logData.custom_event_detail = String(data.customEventDetail);
     }
   }
 

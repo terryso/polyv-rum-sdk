@@ -296,6 +296,58 @@ export const transformDataForSLS = (data: any, context: TransformContext = {}): 
     dimensions.clickY = data.y;
   }
 
+  if (data.type === 'custom') {
+    // 提取自定义事件的 name 字段
+    if (data.name) {
+      dimensions.customEventName = data.name;
+    }
+
+    // 提取 action 字段（如果是通过 trackAction 调用的）
+    if (data.action) {
+      dimensions.customEventAction = data.action;
+    }
+
+    // 提取其他自定义字段，最多保留 10 个
+    const reservedKeys = [
+      'type', 'timestamp', 'name', 'action', 'eventType', 'category',
+      'level', 'userId', 'userName', 'userEmail', 'accountId', 'roles',
+      'pageTitle', 'path', 'search', 'hash', 'url', 'referrer', 'userAgent',
+      'customData', 'clickBizId', 'clickTargetTag', 'clickTargetId',
+      'clickTargetClass', 'clickTargetSelector', 'clickTargetText',
+      'clickPageUrl', 'clickPagePath', 'clickPageTitle', 'clickX', 'clickY'
+    ];
+
+    const customFields: Record<string, any> = {};
+    let fieldCount = 0;
+    const maxFields = 10;
+
+    for (const [key, value] of Object.entries(data)) {
+      if (reservedKeys.includes(key)) continue;
+      if (fieldCount >= maxFields) break;
+
+      // 只保留简单类型的值
+      if (
+        value === null ||
+        value === undefined ||
+        typeof value === 'string' ||
+        typeof value === 'number' ||
+        typeof value === 'boolean'
+      ) {
+        customFields[key] = value;
+        fieldCount++;
+      }
+    }
+
+    if (Object.keys(customFields).length > 0) {
+      dimensions.customEventFields = JSON.stringify(customFields);
+    }
+
+    // 如果有 detail 字段，单独提取
+    if (data.detail !== undefined) {
+      dimensions.customEventDetail = String(data.detail);
+    }
+  }
+
   return {
     __time__: Math.floor(Date.now() / 1000),
     __source__: 'live-admin-v3',
