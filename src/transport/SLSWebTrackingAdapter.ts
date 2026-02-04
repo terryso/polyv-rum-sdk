@@ -294,6 +294,8 @@ export class SLSWebTrackingAdapter {
       this.addApiFields(logData, data);
     } else if (logData.event_type === 'click') {
       this.addClickFields(logData, data);
+    } else if (logData.event_type === 'custom') {
+      this.addCustomFields(logData, data);
     }
 
     // 添加 detail_json，仅保留 hash 信息
@@ -405,6 +407,58 @@ export class SLSWebTrackingAdapter {
 
     if (data.y !== undefined) {
       logData.click_y = Number(data.y);
+    }
+  }
+
+  private addCustomFields(
+    logData: Record<string, any>,
+    data: Record<string, any>
+  ): void {
+    // 提取自定义事件名称
+    if (data.name) {
+      logData.custom_event_name = String(data.name);
+    }
+
+    // 提取 action（如果是通过 trackAction 调用的）
+    if (data.action) {
+      logData.custom_event_action = String(data.action);
+    }
+
+    // 提取自定义事件的其他字段，最多保留 10 个字段
+    const customFields: Record<string, any> = {};
+    let fieldCount = 0;
+    const maxFields = 10;
+    const reservedKeys = [
+      'type', 'timestamp', 'name', 'action', 'eventType', 'category',
+      'level', 'userId', 'userName', 'userEmail', 'accountId', 'roles',
+      'pageTitle', 'path', 'search', 'hash', 'url', 'referrer', 'userAgent',
+      'rawData', 'dimensions'
+    ];
+
+    for (const [key, value] of Object.entries(data)) {
+      if (reservedKeys.includes(key)) continue;
+      if (fieldCount >= maxFields) break;
+
+      // 只保留简单类型的值
+      if (
+        value === null ||
+        value === undefined ||
+        typeof value === 'string' ||
+        typeof value === 'number' ||
+        typeof value === 'boolean'
+      ) {
+        customFields[key] = value;
+        fieldCount++;
+      }
+    }
+
+    if (Object.keys(customFields).length > 0) {
+      logData.custom_event_fields = JSON.stringify(customFields);
+    }
+
+    // 如果有 detail 字段，单独提取
+    if (data.detail !== undefined) {
+      logData.custom_event_detail = String(data.detail);
     }
   }
 
