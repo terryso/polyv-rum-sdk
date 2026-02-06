@@ -382,6 +382,11 @@ export const transformDataForSLS = (data: any, context: TransformContext = {}): 
 };
 
 export const shouldReport = (data: any): boolean => {
+  // 明确过滤掉 init 类型，不上报初始化日志
+  if (data.type === 'init') {
+    return false;
+  }
+
   const dataType = data.type as keyof MitoSampleRateConfig;
   const sampleRate = (mitoConfig.sampleRate as any)[dataType] || 0;
 
