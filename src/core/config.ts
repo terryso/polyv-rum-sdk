@@ -382,8 +382,8 @@ export const transformDataForSLS = (data: any, context: TransformContext = {}): 
 };
 
 export const shouldReport = (data: any): boolean => {
-  // 明确过滤掉 init 类型，不上报初始化日志
-  if (data.type === 'init') {
+  // 明确过滤掉 init 类型和 category 为 init 的日志，不上报初始化日志
+  if (data.type === 'init' || data.category === 'init') {
     return false;
   }
 
