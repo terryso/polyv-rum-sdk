@@ -118,14 +118,6 @@ export class SLSWebTrackingAdapter {
           trackerInstance: !!this.slsTracker
         });
       }
-
-      await this.sendLog({
-        type: 'system',
-        category: 'init',
-        message: 'SLS WebTracking adapter initialized successfully',
-        level: 'info',
-        timestamp: Date.now()
-      });
     } catch (error: any) {
       console.error('❌ Failed to initialize SLSWebTrackingAdapter:', error);
       this.handleError(error);
